@@ -16,43 +16,43 @@ export const ACHIEVEMENTS: Record<
 > = {
   first_correct: {
     id: "first_correct",
-    titleBn: "প্রথম জয়",
-    descBn: "প্রথমবার সঠিক উত্তর দিয়েছো",
+    titleBn: "First Win",
+    descBn: "Get your first correct answer",
   },
   streak_5: {
     id: "streak_5",
-    titleBn: "জ্বলন্ত ধারা",
-    descBn: "এক রানে ৫ স্ট্রিক",
+    titleBn: "On Fire",
+    descBn: "Reach a 5-answer streak in one run",
   },
   perfect_classic: {
     id: "perfect_classic",
-    titleBn: "পারফেক্ট ক্লাসিক",
-    descBn: "ক্লাসিক মোডে ১০/১০ সঠিক",
+    titleBn: "Perfect Classic",
+    descBn: "Score 10/10 in Classic mode",
   },
   daily_complete: {
     id: "daily_complete",
-    titleBn: "দৈনিক যোদ্ধা",
-    descBn: "আজকের চ্যালেঞ্জ শেষ করেছো",
+    titleBn: "Daily Challenger",
+    descBn: "Complete today's challenge",
   },
   time_attack_12: {
     id: "time_attack_12",
-    titleBn: "ঝড়ের গতি",
-    descBn: "৬০ সেকেন্ডে ১২+ সঠিক উত্তর",
+    titleBn: "Storm Speed",
+    descBn: "Get 12+ correct answers in 60 seconds",
   },
   speed_five: {
     id: "speed_five",
-    titleBn: "বজ্রপাত",
-    descBn: "এক রানে ৫ বার ৩ সেকেন্ডের কমে সঠিক",
+    titleBn: "Lightning",
+    descBn: "Get 5 answers under 3 seconds in one run",
   },
   level_5: {
     id: "level_5",
-    titleBn: "অভিজ্ঞ ভ্রমণকারী",
-    descBn: "লেভেল ৫ পৌঁছেছো",
+    titleBn: "Explorer",
+    descBn: "Reach level 5",
   },
   level_10: {
     id: "level_10",
-    titleBn: "মানচিত্র মাস্টার",
-    descBn: "লেভেল ১০ পৌঁছেছো",
+    titleBn: "Map Master",
+    descBn: "Reach level 10",
   },
 };
 
@@ -259,7 +259,7 @@ export function applyRunEndBonuses(
   totals: RunTotals,
   finalScore: number,
   today: string,
-  /** প্রথমবার আজকের চ্যালেঞ্জ পারফেক্ট হলে +৫০ XP (আগে আজ সম্পন্ন ছিল না) */
+  /** +50 XP for first perfect daily run of the day. */
   grantDailyXpBonus: boolean,
 ): { progress: ProgressState; bonusXp: number; newAchievementIds: string[] } {
   let p = {

@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "কোন জেলা? — বাংলাদেশ মানচিত্র কুইজ",
+  title: "Which District? — Bangladesh Map Quiz",
   description:
-    "স্টাইলাইজড মানচিত্রে বিভাগ দেখে বাংলাদেশের জেলা চেনার দ্রুত কুইজ। স্কোর, স্ট্রিক ও সেরা পয়েন্ট।",
+    "A fast Bangladesh district quiz with highlighted map regions, score tracking, and streaks.",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="bn"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

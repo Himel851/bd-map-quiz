@@ -67,10 +67,10 @@ export function BangladeshDistrictMapSvg({
       viewBox="0 0 1530.748 2138"
       className={className}
       role="img"
-      aria-label={title ?? "বাংলাদেশের জেলা মানচিত্র"}
+      aria-label={title ?? "Bangladesh district map"}
       preserveAspectRatio="xMidYMid meet"
     >
-      <title>{title ?? "বাংলাদেশের জেলা মানচিত্র"}</title>
+      <title>{title ?? "Bangladesh district map"}</title>
       <rect width="1530.748" height="2138" fill="#e8f4fc" rx={24} ry={24} />
       <BangladeshDistrictPaths fillById={fillById} defaultFill={defaultFill} />
     </svg>

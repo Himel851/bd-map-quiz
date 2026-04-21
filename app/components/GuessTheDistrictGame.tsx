@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import { BangladeshDistrictMapSvg } from "../data/bd-svg-paths";
 import {
   DIVISION_LABEL_BN,
@@ -42,9 +43,6 @@ const FILL_CORRECT = "#34d399";
 const FILL_WRONG = "#f87171";
 const FILL_DEFAULT = "#CECECE";
 
-const SUBTITLE_BEFORE_PICK =
-  "মানচিত্রে নীল রঙে যে একটা জেলা হাইলাইট আছে, সেটির নাম বেছে নাও। চারটি বিকল্প একই বিভাগের — বিভাগের নাম বাটনে লেখা আছে।";
-
 const TIMEOUT_ID = "__time_up__";
 
 type Phase = "menu" | "playing" | "stats";
@@ -65,7 +63,12 @@ function randomRng() {
   return Math.random;
 }
 
-export function GuessTheDistrictGame() {
+type GuessTheDistrictGameProps = {
+  initialMode?: GameMode;
+};
+
+export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps) {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [phase, setPhase] = useState<Phase>("menu");
   const [progress, setProgress] = useState<ProgressState>(defaultProgress);
@@ -106,6 +109,7 @@ export function GuessTheDistrictGame() {
 
   const [lastRun, setLastRun] = useState<RunStats | null>(null);
   const dailySequenceRef = useRef<RoundPick[] | null>(null);
+  const modeRouteBootedRef = useRef(false);
 
   useEffect(() => {
     scoreRef.current = score;
@@ -247,6 +251,13 @@ export function GuessTheDistrictGame() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!initialMode || !mounted || phase !== "menu" || modeRouteBootedRef.current)
+      return;
+    modeRouteBootedRef.current = true;
+    startMode(initialMode);
+  }, [initialMode, mounted, phase, startMode]);
+
   const advanceOrEnd = useCallback(() => {
     const mode = activeModeRef.current;
     if (!mode) return;
@@ -315,8 +326,8 @@ export function GuessTheDistrictGame() {
 
           setToast(
             nextStreak >= 3
-              ? `দারুণ! 🔥 ${nextStreak} ধারাবাহিক — +${base} (সময় +${timeBonus})`
-              : `সঠিক! +${base} (সময় বোনাস +${timeBonus})`,
+              ? `Great! 🔥 ${nextStreak} streak — +${base} (time +${timeBonus})`
+              : `Correct! +${base} (time bonus +${timeBonus})`,
           );
 
           const xpAdd = 12 + timeBonus + Math.min(8, nextStreak);
@@ -350,11 +361,11 @@ export function GuessTheDistrictGame() {
         rs.wrong += 1;
         setStreak(0);
         bumpPlayed();
-        const name = round?.answer.nameBn ?? "";
+        const answerName = round?.answer.nameBn ?? "Unknown";
         setToast(
           picked
-            ? `হুম — সঠিক জবাব: ${name}`
-            : `সময় শেষ! সঠিক জবাব: ${name}`,
+            ? `Not quite — correct answer: ${answerName}`
+            : `Time up! Correct answer: ${answerName}`,
         );
       }
 
@@ -412,7 +423,7 @@ export function GuessTheDistrictGame() {
         if (!resultHandledRef.current) {
           setPickedId(TIMEOUT_ID);
           runStatsRef.current.wrong += 1;
-          setToast("মোট সময় শেষ!");
+          setToast("Time is over!");
           setStreak(0);
           setProgress((p) => {
             const next = { ...p, played: p.played + 1 };
@@ -459,15 +470,15 @@ export function GuessTheDistrictGame() {
   }, [round, pickedId]);
 
   const subtitle = useMemo(() => {
-    if (!pickedId || !round) return SUBTITLE_BEFORE_PICK;
+    if (!pickedId || !round) return null;
     if (pickedId === TIMEOUT_ID) {
       return activeMode === "time_attack"
-        ? "মোট সময় শেষ।"
-        : "সময় শেষ। সবুজ জেলাটি সঠিক উত্তর।";
+        ? "Global timer finished."
+        : "Time up. The highlighted district is the correct answer.";
     }
     return pickedId === round.answer.id
-      ? "সবুজ জেলাটাই সঠিক উত্তর।"
-      : "সবুজ = সঠিক জেলা, লাল = তোমার বাছাই (ভুল হলে)।";
+      ? "Correct answer selected."
+      : "Green = correct district, red = your selection.";
   }, [pickedId, round, activeMode]);
 
   const questionProgress = useMemo(() => {
@@ -506,7 +517,7 @@ export function GuessTheDistrictGame() {
 
   if (!mounted) {
     return (
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8">
         <div className="h-32 animate-pulse rounded-2xl bg-stone-200 dark:bg-stone-800" />
       </div>
     );
@@ -514,13 +525,13 @@ export function GuessTheDistrictGame() {
 
   if (showAchievements) {
     return (
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
         <header className="text-center">
           <h1 className="text-xl font-bold text-stone-900 dark:text-stone-50">
-            অর্জনসমূহ
+            Achievements
           </h1>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            লেভেল {levelFromXp(progress.xp)} · মোট XP{" "}
+            Level {levelFromXp(progress.xp)} · Total XP{" "}
             <span className="font-mono">{progress.xp}</span>
           </p>
         </header>
@@ -532,7 +543,7 @@ export function GuessTheDistrictGame() {
                 key={a.id}
                 className={`rounded-xl border px-4 py-3 ${
                   got
-                    ? "border-emerald-300 bg-emerald-50/80 dark:border-emerald-700 dark:bg-emerald-950/40"
+                    ? "border-blue-300 bg-blue-50/80 dark:border-blue-700 dark:bg-blue-950/40"
                     : "border-stone-200 opacity-60 dark:border-stone-700"
                 }`}
               >
@@ -553,9 +564,9 @@ export function GuessTheDistrictGame() {
             setShowAchievements(false);
             refreshProgress();
           }}
-          className="rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white hover:bg-black hover:border-black cursor-pointer transition"
+          className="rounded-xl bg-stone-900 px-4 py-3 font-semibold text-white hover:bg-stone-700 cursor-pointer transition dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300"
         >
-          মেনুতে ফিরো
+          Back to Menu
         </button>
       </div>
     );
@@ -567,59 +578,59 @@ export function GuessTheDistrictGame() {
         ? Math.round((lastRun.correct / lastRun.totalAnswered) * 100)
         : 0;
     return (
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
         <header className="text-center">
           <h1 className="text-xl font-bold text-stone-900 dark:text-stone-50">
-            রান শেষ!
+            Run Complete
           </h1>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            {lastRun.mode === "classic" && "ক্লাসিক মোড"}
-            {lastRun.mode === "time_attack" && "টাইম অট্যাক"}
-            {lastRun.mode === "daily" && "আজকের চ্যালেঞ্জ"}
+            {lastRun.mode === "classic" && "Classic Mode"}
+            {lastRun.mode === "time_attack" && "Rapid Quiz"}
+            {lastRun.mode === "daily" && "Today Challenge"}
           </p>
         </header>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">স্কোর</div>
+            <div className="text-stone-500">Score</div>
             <div className="font-mono text-lg font-bold">{lastRun.score}</div>
           </div>
           <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">নির্ভুলতা</div>
+            <div className="text-stone-500">Accuracy</div>
             <div className="font-mono text-lg font-bold">{acc}%</div>
           </div>
           <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">সঠিক / ভুল</div>
+            <div className="text-stone-500">Correct / Wrong</div>
             <div className="font-mono text-lg font-bold">
               {lastRun.correct} / {lastRun.wrong}
             </div>
           </div>
           <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">সেরা স্ট্রিক</div>
-            <div className="font-mono text-lg font-bold text-amber-600">
+            <div className="text-stone-500">Best Streak</div>
+            <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
               {lastRun.bestStreak}×
             </div>
           </div>
           <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">দ্রুত উত্তর (&lt;৩সে)</div>
+            <div className="text-stone-500">Fast Answers (&lt;3s)</div>
             <div className="font-mono text-lg font-bold">
               {lastRun.fastAnswers}
             </div>
           </div>
           <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">XP (এই রান)</div>
-            <div className="font-mono text-lg font-bold text-emerald-600">
+            <div className="text-stone-500">XP (This Run)</div>
+            <div className="font-mono text-lg font-bold text-blue-600 dark:text-blue-400">
               +{lastRun.xpGained}
             </div>
           </div>
         </div>
 
         {lastRun.newAchievementIds.length > 0 ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/50">
-            <div className="text-sm font-semibold text-amber-900 dark:text-amber-200">
-              নতুন অর্জন!
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/50">
+            <div className="text-sm font-semibold text-blue-900 dark:text-blue-200">
+              New Achievement!
             </div>
-            <ul className="mt-2 list-inside list-disc text-sm text-amber-800 dark:text-amber-300">
+            <ul className="mt-2 list-inside list-disc text-sm text-blue-800 dark:text-blue-300">
               {lastRun.newAchievementIds.map((id) => (
                 <li key={id}>{ACHIEVEMENTS[id]?.titleBn ?? id}</li>
               ))}
@@ -632,12 +643,16 @@ export function GuessTheDistrictGame() {
             type="button"
             onClick={() => {
               setLastRun(null);
+              if (initialMode) {
+                router.push("/quiz");
+                return;
+              }
               setPhase("menu");
               refreshProgress();
             }}
-            className="flex-1 rounded-xl border border-stone-300 py-3 font-semibold text-stone-800 hover:bg-stone-100 dark:border-stone-600 dark:text-stone-100 dark:hover:bg-stone-800"
+            className="flex-1 rounded-xl border border-stone-300 py-3 font-semibold text-stone-800 hover:bg-stone-100 dark:border-stone-600 dark:text-stone-100 dark:hover:bg-stone-800 cursor-pointer"
           >
-            মেনু
+            Menu
           </button>
           <button
             type="button"
@@ -647,9 +662,9 @@ export function GuessTheDistrictGame() {
               startMode(m);
               refreshProgress();
             }}
-            className="flex-1 rounded-xl bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700"
+            className="flex-1 rounded-xl bg-stone-900 py-3 font-semibold text-white hover:bg-stone-700 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300 cursor-pointer"
           >
-            আবার খেলো
+            Play Again
           </button>
         </div>
       </div>
@@ -658,23 +673,23 @@ export function GuessTheDistrictGame() {
 
   if (phase === "menu") {
     return (
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
         <header className="text-center">
-          <p className="text-base font-bold text-emerald-600 dark:text-emerald-400">
-            🇧🇩 সহজ মানচিত্র গেম
+          <p className="text-base font-bold text-stone-600 dark:text-stone-300">
+            BD Map Quiz
           </p>
           <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-stone-900 dark:text-stone-50">
-            কোন জেলা? 🎯
+            Which District?
           </h1>
           <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-            যে কারও জন্য সহজ — মোড বেছে শুরু করো
+            Choose a mode and start.
           </p>
         </header>
 
         <div className="rounded-2xl border border-stone-200 bg-white/90 p-4 dark:border-stone-700 dark:bg-stone-900/90">
           <div className="flex items-center justify-between text-sm">
             <span className="text-stone-700 dark:text-stone-300">
-              ⭐ লেভেল <span className="font-bold">{xpBar.level}</span>
+              Level <span className="font-bold">{xpBar.level}</span>
             </span>
             <span className="font-mono text-xs text-stone-500">
               {xpBar.current}/{xpBar.need} XP
@@ -682,60 +697,60 @@ export function GuessTheDistrictGame() {
           </div>
           <div className="mt-2 h-3 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-700">
             <div
-              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+              className="h-full rounded-full bg-blue-500 transition-all duration-500"
               style={{
                 width: `${Math.min(100, (xpBar.current / xpBar.need) * 100)}%`,
               }}
             />
           </div>
           <div className="mt-2 flex justify-between text-xs text-stone-500">
-            <span>মোট XP: {progress.xp}</span>
-            <span>সেরা স্কোর: {progress.bestScore}</span>
+            <span>Total XP: {progress.xp}</span>
+            <span>Best Score: {progress.bestScore}</span>
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
           <button
             type="button"
-            onClick={() => startMode("classic")}
-            className="animate-soft-bounce rounded-2xl border-2 border-emerald-400 bg-emerald-50 px-5 py-5 text-left transition hover:bg-emerald-100 dark:border-emerald-600 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/50 cursor-pointer"
+            onClick={() => router.push("/quiz/classic")}
+            className="rounded-2xl border border-stone-300 bg-white px-5 py-5 text-left transition hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 cursor-pointer"
           >
-            <div className="text-2xl font-extrabold text-stone-900 dark:text-stone-50">
-              🎮 ক্লাসিক
+            <div className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
+              Classic
             </div>
             <div className="mt-1 text-base text-stone-700 dark:text-stone-300">
-              {CLASSIC_ROUNDS} প্রশ্ন · প্রতি প্রশ্নে {QUESTION_TIME_MS / 1000} সেকেন্ড
+              {CLASSIC_ROUNDS} questions · {QUESTION_TIME_MS / 1000}s each
             </div>
           </button>
           <button
             type="button"
-            onClick={() => startMode("time_attack")}
-            className="rounded-2xl border-2 border-amber-400 bg-amber-50 px-5 py-5 text-left transition hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-950/40 dark:hover:bg-amber-900/40 cursor-pointer"
+            onClick={() => router.push("/quiz/rapid-quiz")}
+            className="rounded-2xl border border-stone-300 bg-white px-5 py-5 text-left transition hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 cursor-pointer"
           >
-            <div className="text-2xl font-extrabold text-stone-900 dark:text-stone-50">
-              ⏱️ টাইম অট্যাক
+            <div className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
+              Rapid Quiz
             </div>
             <div className="mt-1 text-base text-stone-700 dark:text-stone-300">
-              {TIME_ATTACK_MS / 1000} সেকেন্ডে যত বেশি পারো
+              Score as much as possible in {TIME_ATTACK_MS / 1000}s
             </div>
           </button>
           <button
             type="button"
-            onClick={() => startMode("daily")}
-            className="rounded-2xl border-2 border-sky-400 bg-sky-50 px-5 py-5 text-left transition hover:bg-sky-100 dark:border-sky-600 dark:bg-sky-950/40 dark:hover:bg-sky-900/40 cursor-pointer"
+            onClick={() => router.push("/quiz/today-challenge")}
+            className="rounded-2xl border border-stone-300 bg-white px-5 py-5 text-left transition hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 cursor-pointer"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-2xl font-extrabold text-stone-900 dark:text-stone-50">
-                📅 আজকের চ্যালেঞ্জ
+              <span className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
+                Today Challenge
               </span>
               {dailyDoneToday ? (
-                <span className="rounded-full bg-sky-200 px-2 py-0.5 text-xs font-medium text-sky-900 dark:bg-sky-800 dark:text-sky-100">
-                  ✅ শেষ
+                <span className="rounded-full bg-stone-200 px-2 py-0.5 text-xs font-medium text-stone-900 dark:bg-stone-700 dark:text-stone-100">
+                  Completed
                 </span>
               ) : null}
             </div>
             <div className="mt-1 text-base text-stone-700 dark:text-stone-300">
-              প্রতিদিন একই {DAILY_ROUNDS} প্রশ্ন · +৫০ XP বোনাস
+              Same {DAILY_ROUNDS} daily questions · +50 XP bonus
             </div>
           </button>
         </div>
@@ -743,13 +758,13 @@ export function GuessTheDistrictGame() {
         <button
           type="button"
           onClick={() => setShowAchievements(true)}
-          className="rounded-xl border border-emerald-400 bg-emerald-50 py-3 text-center text-base font-bold text-emerald-800 transition hover:bg-black hover:border-black dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 cursor-pointer"
+          className="rounded-xl border border-stone-300 bg-white py-3 text-center text-base font-bold text-stone-800 transition hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 cursor-pointer"
         >
-          🏆 অর্জন ও XP দেখো
+          View Achievements & XP
         </button>
 
         <p className="text-center text-[11px] text-stone-400 dark:text-stone-500">
-          মানচিত্র শিক্ষামূলক; সরকারি সীমানার সাথে পার্থক্য থাকতে পারে।
+          Educational map only; boundaries may differ from official sources.
         </p>
       </div>
     );
@@ -757,32 +772,34 @@ export function GuessTheDistrictGame() {
 
   if (!round) {
     return (
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-        <p className="text-center text-stone-500">লোড হচ্ছে…</p>
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8">
+        <p className="text-center text-stone-500">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+    <div className="flex mx-auto w-full max-w-3xl flex-col gap-6 px-4 py-8 lg:px-8">
       <header className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-          বাংলাদেশ · মানচিত্র কুইজ
-          {activeMode === "classic" && " · ক্লাসিক"}
-          {activeMode === "time_attack" && " · টাইম অট্যাক"}
-          {activeMode === "daily" && " · দৈনিক"}
+        <p className="text-sm font-semibold uppercase tracking-wide text-stone-600 dark:text-stone-300">
+          Bangladesh · Map Quiz
+          {activeMode === "classic" && " · Classic"}
+          {activeMode === "time_attack" && " · Rapid Quiz"}
+          {activeMode === "daily" && " · Daily"}
         </p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-          কোন জেলা?
+          Which District?
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
-          {subtitle}
-        </p>
+        {subtitle ? (
+          <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
+            {subtitle}
+          </p>
+        ) : null}
       </header>
 
       {questionProgress ? (
         <div className="text-center text-sm text-stone-600 dark:text-stone-400">
-          প্রশ্ন {questionProgress.current} / {questionProgress.total}
+          Question {questionProgress.current} / {questionProgress.total}
         </div>
       ) : null}
 
@@ -797,18 +814,18 @@ export function GuessTheDistrictGame() {
           >
             {(timeLeftMs / 1000).toFixed(1)}s
           </div>
-          <div className="text-xs text-stone-500">বাকি সময়</div>
+          <div className="text-xs text-stone-500">Time left</div>
         </div>
       ) : (
         <div className="px-1">
           <div className="mb-1 flex justify-between text-xs text-stone-500">
-            <span>প্রশ্নের সময়</span>
+            <span>Question timer</span>
             <span>{Math.ceil(timerRatio * (QUESTION_TIME_MS / 1000))}s</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-700">
             <div
               className={`h-full rounded-full transition-[width] duration-200 ${
-                timerRatio < 0.25 ? "bg-red-500" : "bg-sky-500"
+                timerRatio < 0.25 ? "bg-red-500" : "bg-blue-500"
               }`}
               style={{ width: `${timerRatio * 100}%` }}
             />
@@ -818,86 +835,89 @@ export function GuessTheDistrictGame() {
 
       <div className="grid grid-cols-3 gap-2 text-center text-sm">
         <div className="rounded-xl border border-stone-200 bg-white/80 px-3 py-2 shadow-sm dark:border-stone-700 dark:bg-stone-900/80">
-          <div className="text-xs text-stone-500 dark:text-stone-400">স্কোর</div>
+          <div className="text-xs text-stone-500 dark:text-stone-400">Score</div>
           <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
             {score}
           </div>
         </div>
         <div className="rounded-xl border border-stone-200 bg-white/80 px-3 py-2 shadow-sm dark:border-stone-700 dark:bg-stone-900/80">
-          <div className="text-xs text-stone-500 dark:text-stone-400">স্ট্রিক</div>
-          <div className="font-mono text-lg font-bold text-amber-600 dark:text-amber-400">
+          <div className="text-xs text-stone-500 dark:text-stone-400">Streak</div>
+          <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
             {streak}×
           </div>
         </div>
         <div className="rounded-xl border border-stone-200 bg-white/80 px-3 py-2 shadow-sm dark:border-stone-700 dark:bg-stone-900/80">
-          <div className="text-xs text-stone-500 dark:text-stone-400">লেভেল</div>
-          <div className="font-mono text-lg font-bold text-emerald-700 dark:text-emerald-300">
+          <div className="text-xs text-stone-500 dark:text-stone-400">Level</div>
+          <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
             {levelFromXp(progress.xp)}
           </div>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-xl dark:border-stone-700 dark:bg-stone-950">
-        <BangladeshDistrictMapSvg
-          fillById={fillById}
-          defaultFill={FILL_DEFAULT}
-          className="h-auto w-full max-h-[min(52vh,420px)]"
-        />
-      </div>
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start">
+        <div className="space-y-3">
+          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-xl dark:border-stone-700 dark:bg-stone-950">
+            <BangladeshDistrictMapSvg
+              fillById={fillById}
+              defaultFill={FILL_DEFAULT}
+              className="h-auto w-full max-h-[min(62vh,620px)]"
+            />
+          </div>
+          <p className="text-center text-xs text-stone-500 dark:text-stone-400">
+            Total played: <span className="font-mono">{progress.played}</span> · Keyboard{" "}
+            <kbd className="rounded border border-stone-300 bg-stone-100 px-1 dark:border-stone-600 dark:bg-stone-800">
+              1
+            </kbd>
+            –
+            <kbd className="rounded border border-stone-300 bg-stone-100 px-1 dark:border-stone-600 dark:bg-stone-800">
+              4
+            </kbd>
+          </p>
+        </div>
 
-      <p className="text-center text-xs text-stone-500 dark:text-stone-400">
-        মোট খেলা: <span className="font-mono">{progress.played}</span> · কিবোর্ড{" "}
-        <kbd className="rounded border border-stone-300 bg-stone-100 px-1 dark:border-stone-600 dark:bg-stone-800">
-          1
-        </kbd>
-        –
-        <kbd className="rounded border border-stone-300 bg-stone-100 px-1 dark:border-stone-600 dark:bg-stone-800">
-          4
-        </kbd>
-      </p>
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {round.choices.map((d, idx) => {
-          const locked = pickedId !== null;
-          const isPicked = pickedId === d.id;
-          const isAnswer = d.id === round.answer.id;
-          let ring =
-            "border-stone-200 dark:border-stone-600 hover:border-emerald-400 dark:hover:border-emerald-500";
-          if (locked) {
-            if (isAnswer) {
-              ring =
-                "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 dark:border-emerald-400";
-            } else if (isPicked && !isAnswer) {
-              ring =
-                "border-red-400 bg-red-50 dark:bg-red-950/40 dark:border-red-500";
-            } else {
-              ring = "border-stone-200 opacity-60 dark:border-stone-700";
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          {round.choices.map((d, idx) => {
+            const locked = pickedId !== null;
+            const isPicked = pickedId === d.id;
+            const isAnswer = d.id === round.answer.id;
+            let ring =
+              "border-stone-200 dark:border-stone-600 hover:border-blue-400 dark:hover:border-blue-500";
+            if (locked) {
+              if (isAnswer) {
+                ring =
+                  "border-blue-500 bg-blue-50 dark:bg-blue-950/50 dark:border-blue-400";
+              } else if (isPicked && !isAnswer) {
+                ring =
+                  "border-red-400 bg-red-50 dark:bg-red-950/40 dark:border-red-500";
+              } else {
+                ring = "border-stone-200 opacity-60 dark:border-stone-700";
+              }
             }
-          }
-          return (
-            <button
-              key={d.id}
-              type="button"
-              disabled={locked}
-              onClick={() => onChoose(d)}
-              className={`rounded-2xl border-2 bg-white px-4 py-4 text-left transition dark:bg-stone-900 ${ring} disabled:cursor-default`}
-            >
-              <span className="text-sm font-medium text-stone-500 dark:text-stone-400">
-                বিকল্প {idx + 1} · {DIVISION_LABEL_BN[d.division]}
-              </span>
-              <span className="mt-1 block text-2xl font-extrabold text-stone-900 dark:text-stone-50">
-                {d.nameBn}
-              </span>
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={d.id}
+                type="button"
+                disabled={locked}
+                onClick={() => onChoose(d)}
+                className={`rounded-2xl border-2 bg-white px-4 py-4 text-left transition dark:bg-stone-900 ${ring} disabled:cursor-default cursor-pointer`}
+              >
+                <span className="text-sm font-medium text-stone-500 dark:text-stone-400">
+                  Option {idx + 1} · {DIVISION_LABEL_BN[d.division]}
+                </span>
+                <span className="mt-1 block text-2xl font-extrabold text-stone-900 dark:text-stone-50">
+                  {d.nameBn}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {toast ? (
         <p
           className={`text-center text-sm font-medium ${
             pickedId === round.answer.id
-              ? "text-emerald-700 dark:text-emerald-300"
+              ? "text-blue-700 dark:text-blue-300"
               : "text-red-700 dark:text-red-300"
           }`}
         >
@@ -908,13 +928,17 @@ export function GuessTheDistrictGame() {
       <button
         type="button"
         onClick={() => {
+          if (initialMode) {
+            router.push("/quiz");
+            return;
+          }
           setPhase("menu");
           setRound(null);
           setActiveMode(null);
         }}
         className="text-center text-sm text-stone-500 underline cursor-pointer"
       >
-        মেনুতে ফিরো (রান ছেড়ে দাও)
+        Back to Menu (leave run)
       </button>
     </div>
   );
