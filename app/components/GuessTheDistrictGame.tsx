@@ -525,17 +525,17 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
 
   if (showAchievements) {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 text-slate-100">
         <header className="text-center">
-          <h1 className="text-xl font-bold text-stone-900 dark:text-stone-50">
+          <h1 className="text-xl font-bold text-slate-100">
             Achievements
           </h1>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+          <p className="mt-1 text-sm text-slate-300">
             Level {levelFromXp(progress.xp)} · Total XP{" "}
             <span className="font-mono">{progress.xp}</span>
           </p>
         </header>
-        <ul className="space-y-3">
+        <ul className="space-y-3 rounded-2xl border border-cyan-200/25 bg-slate-900/45 p-3 backdrop-blur-sm">
           {Object.values(ACHIEVEMENTS).map((a) => {
             const got = progress.achievements.includes(a.id);
             return (
@@ -543,15 +543,15 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
                 key={a.id}
                 className={`rounded-xl border px-4 py-3 ${
                   got
-                    ? "border-blue-300 bg-blue-50/80 dark:border-blue-700 dark:bg-blue-950/40"
-                    : "border-stone-200 opacity-60 dark:border-stone-700"
+                    ? "border-cyan-300/60 bg-cyan-400/12"
+                    : "border-slate-600/70 bg-slate-900/35"
                 }`}
               >
-                <div className="font-semibold text-stone-900 dark:text-stone-100">
+                <div className="font-semibold text-slate-100">
                   {got ? "✓ " : "○ "}
                   {a.titleBn}
                 </div>
-                <div className="text-xs text-stone-600 dark:text-stone-400">
+                <div className="text-xs text-slate-300">
                   {a.descBn}
                 </div>
               </li>
@@ -564,7 +564,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
             setShowAchievements(false);
             refreshProgress();
           }}
-          className="rounded-xl bg-stone-900 px-4 py-3 font-semibold text-white hover:bg-stone-700 cursor-pointer transition dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300"
+          className="rounded-xl bg-linear-to-r from-cyan-400 to-emerald-400 px-4 py-3 font-semibold text-slate-950 hover:brightness-110 cursor-pointer transition"
         >
           Back to Menu
         </button>
@@ -644,7 +644,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
             onClick={() => {
               setLastRun(null);
               if (initialMode) {
-                router.push("/quiz");
+                router.push("/");
                 return;
               }
               setPhase("menu");
@@ -761,6 +761,14 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           className="rounded-xl border border-cyan-200/25 bg-slate-900/55 py-3 text-center text-base font-bold text-slate-100 transition hover:bg-slate-800/70 cursor-pointer"
         >
           View Achievements & XP
+        </button>
+
+        <button
+          type="button"
+          onClick={() => router.push("/view-map")}
+          className="rounded-xl border border-cyan-200/25 bg-slate-900/55 py-3 text-center text-base font-bold text-slate-100 transition hover:bg-slate-800/70 cursor-pointer"
+        >
+          View Full Map
         </button>
 
         <p className="text-center text-[11px] text-slate-400">
@@ -929,7 +937,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         type="button"
         onClick={() => {
           if (initialMode) {
-            router.push("/quiz");
+            router.push("/");
             return;
           }
           setPhase("menu");
