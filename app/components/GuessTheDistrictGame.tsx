@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
 import { BangladeshDistrictMapSvg } from "../data/bd-svg-paths";
 import {
   DIVISION_LABEL_BN,
@@ -84,7 +85,6 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [toast, setToast] = useState<string | null>(null);
 
   const [timeLeftMs, setTimeLeftMs] = useState(TIME_ATTACK_MS);
   const timeAttackEndRef = useRef<number | null>(null);
@@ -233,7 +233,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
     scoreRef.current = 0;
     setStreak(0);
     setPickedId(null);
-    setToast(null);
+    toast.dismiss();
     setRoundIndex(0);
     roundIndexRef.current = 0;
     const qStart = Date.now();
@@ -285,7 +285,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
     setRoundIndex(nextIdx);
     roundIndexRef.current = nextIdx;
     setPickedId(null);
-    setToast(null);
+    toast.dismiss();
     const qStart = Date.now();
     questionStartRef.current = qStart;
     setQuestionStartedAt(qStart);
@@ -331,10 +331,11 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
 
           if (elapsedMs < 3000) rs.fastAnswers += 1;
 
-          setToast(
+          toast.success(
             nextStreak >= 3
               ? `Great! 🔥 ${nextStreak} streak — +${base} (time +${timeBonus})`
               : `Correct! +${base} (time bonus +${timeBonus})`,
+            { autoClose: 1500 },
           );
 
           const xpAdd = 12 + timeBonus + Math.min(8, nextStreak);
@@ -369,10 +370,11 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         setStreak(0);
         bumpPlayed();
         const answerName = round?.answer.nameBn ?? "Unknown";
-        setToast(
+        toast.error(
           picked
             ? `Not quite — correct answer: ${answerName}`
             : `Time up! Correct answer: ${answerName}`,
+          { autoClose: 1800 },
         );
       }
 
@@ -430,7 +432,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         if (!resultHandledRef.current) {
           setPickedId(TIMEOUT_ID);
           runStatsRef.current.wrong += 1;
-          setToast("Time is over!");
+          toast.info("Time is over!", { autoClose: 1500 });
           setStreak(0);
           setProgress((p) => {
             const next = { ...p, played: p.played + 1 };
@@ -826,6 +828,15 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
 
   return (
     <div className="flex mx-auto w-full max-w-4xl flex-col gap-4 px-3 py-4 text-slate-100 sm:gap-6 sm:px-4 sm:py-8 lg:px-8">
+      <ToastContainer
+        position="top-center"
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        pauseOnHover={false}
+        draggable={false}
+        theme="dark"
+      />
       <header className="text-center">
         <p className="text-sm font-semibold uppercase tracking-wide text-cyan-200/90">
           Bangladesh · Map Quiz
@@ -836,11 +847,11 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-100">
           Which District?
         </h1>
-        {subtitle ? (
+        {/* {subtitle ? (
           <p className="mt-2 text-sm leading-relaxed text-slate-300">
             {subtitle}
           </p>
-        ) : null}
+        ) : null} */}
       </header>
 
       <div className="flex flex-col gap-3">
@@ -880,7 +891,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+        <div className="hidden md:grid grid-cols-3 gap-2 text-center text-sm">
           <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
             <div className="text-xs text-slate-300">Score</div>
             <div className="font-mono text-lg font-bold text-slate-100">
@@ -902,13 +913,13 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         </div>
       </div>
 
-      <div className="grid grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] gap-2 sm:gap-3 lg:gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:gap-5 lg:grid-cols-2 lg:items-start">
         <div className="space-y-3">
-          <div className="overflow-hidden rounded-2xl border border-cyan-200/20 bg-slate-900/55 shadow-xl backdrop-blur-sm">
+          <div className="overflow-hidden shadow-xl">
             <BangladeshDistrictMapSvg
               fillById={fillById}
               defaultFill={FILL_DEFAULT}
-              className="h-auto w-full max-h-[52vh] sm:max-h-[58vh] lg:max-h-[min(62vh,620px)]"
+              className="h-auto w-full max-h-[44vh] md:max-h-[58vh] lg:max-h-[min(62vh,620px)]"
             />
           </div>
           <p className="text-center text-[11px] text-slate-300 sm:text-xs">
@@ -923,7 +934,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           </p>
         </div>
 
-        <div className="grid max-h-[52vh] grid-cols-1 gap-2 overflow-y-auto pr-1 sm:max-h-[58vh] sm:gap-3 lg:max-h-[min(62vh,620px)] lg:grid-cols-1">
+        <div className="grid max-h-[52vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:max-h-[50vh] sm:gap-3 lg:max-h-[min(62vh,620px)] lg:grid-cols-1">
           {round.choices.map((d, idx) => {
             const locked = pickedId !== null;
             const isPicked = pickedId === d.id;
@@ -960,18 +971,6 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           })}
         </div>
       </div>
-
-      {toast ? (
-        <p
-          className={`text-center text-sm font-medium ${
-            pickedId === round.answer.id
-              ? "text-blue-700 dark:text-blue-300"
-              : "text-red-700 dark:text-red-300"
-          }`}
-        >
-          {toast}
-        </p>
-      ) : null}
 
       <button
         type="button"
