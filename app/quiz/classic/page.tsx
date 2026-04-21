@@ -2,7 +2,7 @@ import { GuessTheDistrictGame } from "../../components/GuessTheDistrictGame";
 
 export default function ClassicQuizPage() {
   return (
-    <div className="min-h-full flex flex-1 flex-col bg-stone-100 dark:bg-stone-950">
+    <div className="animated-quiz-bg min-h-full flex flex-1 flex-col">
       <main className="flex flex-1 flex-col pb-10">
         <GuessTheDistrictGame initialMode="classic" />
       </main>

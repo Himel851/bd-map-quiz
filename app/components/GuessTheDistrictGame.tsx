@@ -578,12 +578,12 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         ? Math.round((lastRun.correct / lastRun.totalAnswered) * 100)
         : 0;
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 text-slate-100">
         <header className="text-center">
-          <h1 className="text-xl font-bold text-stone-900 dark:text-stone-50">
+          <h1 className="text-xl font-bold text-slate-100">
             Run Complete
           </h1>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+          <p className="mt-1 text-sm text-slate-300">
             {lastRun.mode === "classic" && "Classic Mode"}
             {lastRun.mode === "time_attack" && "Rapid Quiz"}
             {lastRun.mode === "daily" && "Today Challenge"}
@@ -591,34 +591,34 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         </header>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">Score</div>
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 p-3 backdrop-blur-sm">
+            <div className="text-slate-300">Score</div>
             <div className="font-mono text-lg font-bold">{lastRun.score}</div>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">Accuracy</div>
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 p-3 backdrop-blur-sm">
+            <div className="text-slate-300">Accuracy</div>
             <div className="font-mono text-lg font-bold">{acc}%</div>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">Correct / Wrong</div>
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 p-3 backdrop-blur-sm">
+            <div className="text-slate-300">Correct / Wrong</div>
             <div className="font-mono text-lg font-bold">
               {lastRun.correct} / {lastRun.wrong}
             </div>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">Best Streak</div>
-            <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 p-3 backdrop-blur-sm">
+            <div className="text-slate-300">Best Streak</div>
+            <div className="font-mono text-lg font-bold text-slate-100">
               {lastRun.bestStreak}×
             </div>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">Fast Answers (&lt;3s)</div>
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 p-3 backdrop-blur-sm">
+            <div className="text-slate-300">Fast Answers (&lt;3s)</div>
             <div className="font-mono text-lg font-bold">
               {lastRun.fastAnswers}
             </div>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-700 dark:bg-stone-900">
-            <div className="text-stone-500">XP (This Run)</div>
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 p-3 backdrop-blur-sm">
+            <div className="text-slate-300">XP (This Run)</div>
             <div className="font-mono text-lg font-bold text-blue-600 dark:text-blue-400">
               +{lastRun.xpGained}
             </div>
@@ -650,7 +650,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
               setPhase("menu");
               refreshProgress();
             }}
-            className="flex-1 rounded-xl border border-stone-300 py-3 font-semibold text-stone-800 hover:bg-stone-100 dark:border-stone-600 dark:text-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+            className="flex-1 rounded-xl border border-cyan-200/25 bg-slate-900/45 py-3 font-semibold text-slate-100 hover:bg-slate-800/70 cursor-pointer"
           >
             Menu
           </button>
@@ -662,7 +662,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
               startMode(m);
               refreshProgress();
             }}
-            className="flex-1 rounded-xl bg-stone-900 py-3 font-semibold text-white hover:bg-stone-700 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300 cursor-pointer"
+            className="flex-1 rounded-xl bg-linear-to-r from-cyan-400 to-emerald-400 py-3 font-semibold text-slate-950 hover:brightness-110 cursor-pointer"
           >
             Play Again
           </button>
@@ -673,29 +673,29 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
 
   if (phase === "menu") {
     return (
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8 text-slate-100">
         <header className="text-center">
-          <p className="text-base font-bold text-stone-600 dark:text-stone-300">
+          <p className="text-base font-bold text-cyan-200/90">
             BD Map Quiz
           </p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-stone-900 dark:text-stone-50">
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-100">
             Which District?
           </h1>
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+          <p className="mt-2 text-sm text-slate-300">
             Choose a mode and start.
           </p>
         </header>
 
-        <div className="rounded-2xl border border-stone-200 bg-white/90 p-4 dark:border-stone-700 dark:bg-stone-900/90">
+        <div className="rounded-2xl border border-cyan-200/25 bg-slate-900/55 p-4 backdrop-blur-sm">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-stone-700 dark:text-stone-300">
+            <span className="text-slate-200">
               Level <span className="font-bold">{xpBar.level}</span>
             </span>
-            <span className="font-mono text-xs text-stone-500">
+            <span className="font-mono text-xs text-slate-300">
               {xpBar.current}/{xpBar.need} XP
             </span>
           </div>
-          <div className="mt-2 h-3 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-700">
+          <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-700/70">
             <div
               className="h-full rounded-full bg-blue-500 transition-all duration-500"
               style={{
@@ -703,7 +703,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
               }}
             />
           </div>
-          <div className="mt-2 flex justify-between text-xs text-stone-500">
+          <div className="mt-2 flex justify-between text-xs text-slate-300">
             <span>Total XP: {progress.xp}</span>
             <span>Best Score: {progress.bestScore}</span>
           </div>
@@ -713,43 +713,43 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           <button
             type="button"
             onClick={() => router.push("/quiz/classic")}
-            className="rounded-2xl border border-stone-300 bg-white px-5 py-5 text-left transition hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 cursor-pointer"
+            className="rounded-2xl border border-cyan-200/25 bg-slate-900/55 px-5 py-5 text-left transition hover:bg-slate-800/70 cursor-pointer"
           >
-            <div className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
+            <div className="text-xl font-extrabold text-slate-100">
               Classic
             </div>
-            <div className="mt-1 text-base text-stone-700 dark:text-stone-300">
+            <div className="mt-1 text-base text-slate-300">
               {CLASSIC_ROUNDS} questions · {QUESTION_TIME_MS / 1000}s each
             </div>
           </button>
           <button
             type="button"
             onClick={() => router.push("/quiz/rapid-quiz")}
-            className="rounded-2xl border border-stone-300 bg-white px-5 py-5 text-left transition hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 cursor-pointer"
+            className="rounded-2xl border border-cyan-200/25 bg-slate-900/55 px-5 py-5 text-left transition hover:bg-slate-800/70 cursor-pointer"
           >
-            <div className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
+            <div className="text-xl font-extrabold text-slate-100">
               Rapid Quiz
             </div>
-            <div className="mt-1 text-base text-stone-700 dark:text-stone-300">
+            <div className="mt-1 text-base text-slate-300">
               Score as much as possible in {TIME_ATTACK_MS / 1000}s
             </div>
           </button>
           <button
             type="button"
             onClick={() => router.push("/quiz/today-challenge")}
-            className="rounded-2xl border border-stone-300 bg-white px-5 py-5 text-left transition hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 cursor-pointer"
+            className="rounded-2xl border border-cyan-200/25 bg-slate-900/55 px-5 py-5 text-left transition hover:bg-slate-800/70 cursor-pointer"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xl font-extrabold text-stone-900 dark:text-stone-50">
+              <span className="text-xl font-extrabold text-slate-100">
                 Today Challenge
               </span>
               {dailyDoneToday ? (
-                <span className="rounded-full bg-stone-200 px-2 py-0.5 text-xs font-medium text-stone-900 dark:bg-stone-700 dark:text-stone-100">
+                <span className="rounded-full bg-cyan-300/20 px-2 py-0.5 text-xs font-medium text-cyan-100">
                   Completed
                 </span>
               ) : null}
             </div>
-            <div className="mt-1 text-base text-stone-700 dark:text-stone-300">
+            <div className="mt-1 text-base text-slate-300">
               Same {DAILY_ROUNDS} daily questions · +50 XP bonus
             </div>
           </button>
@@ -758,12 +758,12 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         <button
           type="button"
           onClick={() => setShowAchievements(true)}
-          className="rounded-xl border border-stone-300 bg-white py-3 text-center text-base font-bold text-stone-800 transition hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 cursor-pointer"
+          className="rounded-xl border border-cyan-200/25 bg-slate-900/55 py-3 text-center text-base font-bold text-slate-100 transition hover:bg-slate-800/70 cursor-pointer"
         >
           View Achievements & XP
         </button>
 
-        <p className="text-center text-[11px] text-stone-400 dark:text-stone-500">
+        <p className="text-center text-[11px] text-slate-400">
           Educational map only; boundaries may differ from official sources.
         </p>
       </div>
@@ -779,26 +779,26 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
   }
 
   return (
-    <div className="flex mx-auto w-full max-w-3xl flex-col gap-6 px-4 py-8 lg:px-8">
+    <div className="flex mx-auto w-full max-w-3xl flex-col gap-6 px-4 py-8 text-slate-100 lg:px-8">
       <header className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-stone-600 dark:text-stone-300">
+        <p className="text-sm font-semibold uppercase tracking-wide text-cyan-200/90">
           Bangladesh · Map Quiz
           {activeMode === "classic" && " · Classic"}
           {activeMode === "time_attack" && " · Rapid Quiz"}
           {activeMode === "daily" && " · Daily"}
         </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-100">
           Which District?
         </h1>
         {subtitle ? (
-          <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
             {subtitle}
           </p>
         ) : null}
       </header>
 
       {questionProgress ? (
-        <div className="text-center text-sm text-stone-600 dark:text-stone-400">
+        <div className="text-center text-sm text-slate-300">
           Question {questionProgress.current} / {questionProgress.total}
         </div>
       ) : null}
@@ -809,20 +809,20 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
             className={`font-mono text-3xl font-bold tabular-nums ${
               timeLeftMs < 10_000
                 ? "text-red-600"
-                : "text-stone-900 dark:text-stone-100"
+                : "text-slate-100"
             }`}
           >
             {(timeLeftMs / 1000).toFixed(1)}s
           </div>
-          <div className="text-xs text-stone-500">Time left</div>
+          <div className="text-xs text-slate-300">Time left</div>
         </div>
       ) : (
         <div className="px-1">
-          <div className="mb-1 flex justify-between text-xs text-stone-500">
+          <div className="mb-1 flex justify-between text-xs text-slate-300">
             <span>Question timer</span>
             <span>{Math.ceil(timerRatio * (QUESTION_TIME_MS / 1000))}s</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-700">
+          <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
             <div
               className={`h-full rounded-full transition-[width] duration-200 ${
                 timerRatio < 0.25 ? "bg-red-500" : "bg-blue-500"
@@ -834,21 +834,21 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
       )}
 
       <div className="grid grid-cols-3 gap-2 text-center text-sm">
-        <div className="rounded-xl border border-stone-200 bg-white/80 px-3 py-2 shadow-sm dark:border-stone-700 dark:bg-stone-900/80">
-          <div className="text-xs text-stone-500 dark:text-stone-400">Score</div>
-          <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
+        <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
+          <div className="text-xs text-slate-300">Score</div>
+          <div className="font-mono text-lg font-bold text-slate-100">
             {score}
           </div>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-white/80 px-3 py-2 shadow-sm dark:border-stone-700 dark:bg-stone-900/80">
-          <div className="text-xs text-stone-500 dark:text-stone-400">Streak</div>
-          <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
+        <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
+          <div className="text-xs text-slate-300">Streak</div>
+          <div className="font-mono text-lg font-bold text-slate-100">
             {streak}×
           </div>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-white/80 px-3 py-2 shadow-sm dark:border-stone-700 dark:bg-stone-900/80">
-          <div className="text-xs text-stone-500 dark:text-stone-400">Level</div>
-          <div className="font-mono text-lg font-bold text-stone-900 dark:text-stone-100">
+        <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
+          <div className="text-xs text-slate-300">Level</div>
+          <div className="font-mono text-lg font-bold text-slate-100">
             {levelFromXp(progress.xp)}
           </div>
         </div>
@@ -856,20 +856,20 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-3">
-          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-xl dark:border-stone-700 dark:bg-stone-950">
+          <div className="overflow-hidden rounded-2xl border border-cyan-200/20 bg-slate-900/55 shadow-xl backdrop-blur-sm">
             <BangladeshDistrictMapSvg
               fillById={fillById}
               defaultFill={FILL_DEFAULT}
               className="h-auto w-full max-h-[min(62vh,620px)]"
             />
           </div>
-          <p className="text-center text-xs text-stone-500 dark:text-stone-400">
+          <p className="text-center text-xs text-slate-300">
             Total played: <span className="font-mono">{progress.played}</span> · Keyboard{" "}
-            <kbd className="rounded border border-stone-300 bg-stone-100 px-1 dark:border-stone-600 dark:bg-stone-800">
+            <kbd className="rounded border border-cyan-200/30 bg-slate-800/80 px-1 text-slate-100">
               1
             </kbd>
             –
-            <kbd className="rounded border border-stone-300 bg-stone-100 px-1 dark:border-stone-600 dark:bg-stone-800">
+            <kbd className="rounded border border-cyan-200/30 bg-slate-800/80 px-1 text-slate-100">
               4
             </kbd>
           </p>
@@ -881,16 +881,16 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
             const isPicked = pickedId === d.id;
             const isAnswer = d.id === round.answer.id;
             let ring =
-              "border-stone-200 dark:border-stone-600 hover:border-blue-400 dark:hover:border-blue-500";
+              "border-cyan-200/25 hover:border-cyan-300/60";
             if (locked) {
               if (isAnswer) {
                 ring =
-                  "border-blue-500 bg-blue-50 dark:bg-blue-950/50 dark:border-blue-400";
+                  "border-cyan-300 bg-cyan-400/15";
               } else if (isPicked && !isAnswer) {
                 ring =
-                  "border-red-400 bg-red-50 dark:bg-red-950/40 dark:border-red-500";
+                  "border-red-300 bg-red-400/10";
               } else {
-                ring = "border-stone-200 opacity-60 dark:border-stone-700";
+                ring = "border-cyan-200/15 opacity-60";
               }
             }
             return (
@@ -899,12 +899,12 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
                 type="button"
                 disabled={locked}
                 onClick={() => onChoose(d)}
-                className={`rounded-2xl border-2 bg-white px-4 py-4 text-left transition dark:bg-stone-900 ${ring} disabled:cursor-default cursor-pointer`}
+                className={`rounded-2xl border-2 bg-slate-900/55 px-4 py-4 text-left transition backdrop-blur-sm ${ring} disabled:cursor-default cursor-pointer`}
               >
-                <span className="text-sm font-medium text-stone-500 dark:text-stone-400">
+                <span className="text-sm font-medium text-slate-300">
                   Option {idx + 1} · {DIVISION_LABEL_BN[d.division]}
                 </span>
-                <span className="mt-1 block text-2xl font-extrabold text-stone-900 dark:text-stone-50">
+                <span className="mt-1 block text-2xl font-extrabold text-slate-100">
                   {d.nameBn}
                 </span>
               </button>
