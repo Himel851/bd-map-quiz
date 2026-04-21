@@ -73,6 +73,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
   const [phase, setPhase] = useState<Phase>("menu");
   const [progress, setProgress] = useState<ProgressState>(defaultProgress);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [selectedMenuMode, setSelectedMenuMode] = useState<GameMode>("classic");
 
   const [activeMode, setActiveMode] = useState<GameMode | null>(null);
   const [round, setRound] = useState<RoundPick | null>(null);
@@ -110,6 +111,12 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
   const [lastRun, setLastRun] = useState<RunStats | null>(null);
   const dailySequenceRef = useRef<RoundPick[] | null>(null);
   const modeRouteBootedRef = useRef(false);
+
+  const modeRoute = useCallback((mode: GameMode) => {
+    if (mode === "classic") return "/quiz/classic";
+    if (mode === "time_attack") return "/quiz/rapid-quiz";
+    return "/quiz/today-challenge";
+  }, []);
 
   useEffect(() => {
     scoreRef.current = score;
@@ -712,11 +719,18 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         <div className="flex flex-col gap-3">
           <button
             type="button"
-            onClick={() => router.push("/quiz/classic")}
-            className="rounded-2xl border border-cyan-200/25 bg-slate-900/55 px-5 py-5 text-left transition hover:bg-slate-800/70 cursor-pointer"
+            onClick={() => setSelectedMenuMode("classic")}
+            className={`rounded-2xl border px-5 py-5 text-left transition cursor-pointer ${
+              selectedMenuMode === "classic"
+                ? "border-cyan-300/70 bg-cyan-400/10 ring-1 ring-cyan-300/45"
+                : "border-cyan-200/25 bg-slate-900/55 hover:bg-slate-800/70"
+            }`}
           >
-            <div className="text-xl font-extrabold text-slate-100">
+            <div className="flex items-center justify-between gap-2 text-xl font-extrabold text-slate-100">
               Classic
+              {selectedMenuMode === "classic" ? (
+                <span className="text-sm font-bold text-cyan-200">Selected</span>
+              ) : null}
             </div>
             <div className="mt-1 text-base text-slate-300">
               {CLASSIC_ROUNDS} questions · {QUESTION_TIME_MS / 1000}s each
@@ -724,11 +738,18 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           </button>
           <button
             type="button"
-            onClick={() => router.push("/quiz/rapid-quiz")}
-            className="rounded-2xl border border-cyan-200/25 bg-slate-900/55 px-5 py-5 text-left transition hover:bg-slate-800/70 cursor-pointer"
+            onClick={() => setSelectedMenuMode("time_attack")}
+            className={`rounded-2xl border px-5 py-5 text-left transition cursor-pointer ${
+              selectedMenuMode === "time_attack"
+                ? "border-cyan-300/70 bg-cyan-400/10 ring-1 ring-cyan-300/45"
+                : "border-cyan-200/25 bg-slate-900/55 hover:bg-slate-800/70"
+            }`}
           >
-            <div className="text-xl font-extrabold text-slate-100">
+            <div className="flex items-center justify-between gap-2 text-xl font-extrabold text-slate-100">
               Rapid Quiz
+              {selectedMenuMode === "time_attack" ? (
+                <span className="text-sm font-bold text-cyan-200">Selected</span>
+              ) : null}
             </div>
             <div className="mt-1 text-base text-slate-300">
               Score as much as possible in {TIME_ATTACK_MS / 1000}s
@@ -736,13 +757,20 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           </button>
           <button
             type="button"
-            onClick={() => router.push("/quiz/today-challenge")}
-            className="rounded-2xl border border-cyan-200/25 bg-slate-900/55 px-5 py-5 text-left transition hover:bg-slate-800/70 cursor-pointer"
+            onClick={() => setSelectedMenuMode("daily")}
+            className={`rounded-2xl border px-5 py-5 text-left transition cursor-pointer ${
+              selectedMenuMode === "daily"
+                ? "border-cyan-300/70 bg-cyan-400/10 ring-1 ring-cyan-300/45"
+                : "border-cyan-200/25 bg-slate-900/55 hover:bg-slate-800/70"
+            }`}
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-xl font-extrabold text-slate-100">
                 Today Challenge
               </span>
+              {selectedMenuMode === "daily" ? (
+                <span className="text-sm font-bold text-cyan-200">Selected</span>
+              ) : null}
               {dailyDoneToday ? (
                 <span className="rounded-full bg-cyan-300/20 px-2 py-0.5 text-xs font-medium text-cyan-100">
                   Completed
@@ -757,19 +785,29 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
 
         <button
           type="button"
-          onClick={() => setShowAchievements(true)}
-          className="rounded-xl border border-cyan-200/25 bg-slate-900/55 py-3 text-center text-base font-bold text-slate-100 transition hover:bg-slate-800/70 cursor-pointer"
+          onClick={() => router.push(modeRoute(selectedMenuMode))}
+          className="rounded-xl bg-linear-to-r from-cyan-400 to-emerald-400 py-3.5 text-center text-base font-extrabold text-slate-950 transition hover:brightness-110 cursor-pointer"
         >
-          View Achievements & XP
+          Start Quiz
         </button>
 
-        <button
-          type="button"
-          onClick={() => router.push("/view-map")}
-          className="rounded-xl border border-cyan-200/25 bg-slate-900/55 py-3 text-center text-base font-bold text-slate-100 transition hover:bg-slate-800/70 cursor-pointer"
-        >
-          View Full Map
-        </button>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setShowAchievements(true)}
+            className="rounded-xl border border-cyan-200/25 bg-slate-900/55 py-3 text-center text-base font-bold text-slate-100 transition hover:bg-slate-800/70 cursor-pointer"
+          >
+            View Achievements & XP
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/view-map")}
+            className="rounded-xl border border-cyan-200/25 bg-slate-900/55 py-3 text-center text-base font-bold text-slate-100 transition hover:bg-slate-800/70 cursor-pointer"
+          >
+            View Full Map
+          </button>
+        </div>
 
         <p className="text-center text-[11px] text-slate-400">
           Educational map only; boundaries may differ from official sources.
@@ -787,7 +825,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
   }
 
   return (
-    <div className="flex mx-auto w-full max-w-3xl flex-col gap-6 px-4 py-8 text-slate-100 lg:px-8">
+    <div className="flex mx-auto w-full max-w-4xl flex-col gap-4 px-3 py-4 text-slate-100 sm:gap-6 sm:px-4 sm:py-8 lg:px-8">
       <header className="text-center">
         <p className="text-sm font-semibold uppercase tracking-wide text-cyan-200/90">
           Bangladesh · Map Quiz
@@ -805,73 +843,75 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         ) : null}
       </header>
 
-      {questionProgress ? (
-        <div className="text-center text-sm text-slate-300">
-          Question {questionProgress.current} / {questionProgress.total}
-        </div>
-      ) : null}
+      <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-stretch">
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 text-center text-sm font-semibold text-slate-200 backdrop-blur-sm">
+            {questionProgress
+              ? `Question ${questionProgress.current} / ${questionProgress.total}`
+              : "Rapid Quiz"}
+          </div>
 
-      {activeMode === "time_attack" ? (
-        <div className="text-center">
-          <div
-            className={`font-mono text-3xl font-bold tabular-nums ${
-              timeLeftMs < 10_000
-                ? "text-red-600"
-                : "text-slate-100"
-            }`}
-          >
-            {(timeLeftMs / 1000).toFixed(1)}s
-          </div>
-          <div className="text-xs text-slate-300">Time left</div>
+          {activeMode === "time_attack" ? (
+            <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 text-center backdrop-blur-sm">
+              <div
+                className={`font-mono text-2xl font-bold tabular-nums ${
+                  timeLeftMs < 10_000 ? "text-red-400" : "text-slate-100"
+                }`}
+              >
+                {(timeLeftMs / 1000).toFixed(1)}s
+              </div>
+              <div className="text-xs text-slate-300">Time left</div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 backdrop-blur-sm">
+              <div className="mb-1 flex justify-between text-xs text-slate-300">
+                <span>Question timer</span>
+                <span>{Math.ceil(timerRatio * (QUESTION_TIME_MS / 1000))}s</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
+                <div
+                  className={`h-full rounded-full transition-[width] duration-200 ${
+                    timerRatio < 0.25 ? "bg-red-500" : "bg-blue-500"
+                  }`}
+                  style={{ width: `${timerRatio * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="px-1">
-          <div className="mb-1 flex justify-between text-xs text-slate-300">
-            <span>Question timer</span>
-            <span>{Math.ceil(timerRatio * (QUESTION_TIME_MS / 1000))}s</span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
-            <div
-              className={`h-full rounded-full transition-[width] duration-200 ${
-                timerRatio < 0.25 ? "bg-red-500" : "bg-blue-500"
-              }`}
-              style={{ width: `${timerRatio * 100}%` }}
-            />
-          </div>
-        </div>
-      )}
 
-      <div className="grid grid-cols-3 gap-2 text-center text-sm">
-        <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
-          <div className="text-xs text-slate-300">Score</div>
-          <div className="font-mono text-lg font-bold text-slate-100">
-            {score}
+        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
+            <div className="text-xs text-slate-300">Score</div>
+            <div className="font-mono text-lg font-bold text-slate-100">
+              {score}
+            </div>
           </div>
-        </div>
-        <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
-          <div className="text-xs text-slate-300">Streak</div>
-          <div className="font-mono text-lg font-bold text-slate-100">
-            {streak}×
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
+            <div className="text-xs text-slate-300">Streak</div>
+            <div className="font-mono text-lg font-bold text-slate-100">
+              {streak}×
+            </div>
           </div>
-        </div>
-        <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
-          <div className="text-xs text-slate-300">Level</div>
-          <div className="font-mono text-lg font-bold text-slate-100">
-            {levelFromXp(progress.xp)}
+          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
+            <div className="text-xs text-slate-300">Level</div>
+            <div className="font-mono text-lg font-bold text-slate-100">
+              {levelFromXp(progress.xp)}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] gap-2 sm:gap-3 lg:gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-2xl border border-cyan-200/20 bg-slate-900/55 shadow-xl backdrop-blur-sm">
             <BangladeshDistrictMapSvg
               fillById={fillById}
               defaultFill={FILL_DEFAULT}
-              className="h-auto w-full max-h-[min(62vh,620px)]"
+              className="h-auto w-full max-h-[52vh] sm:max-h-[58vh] lg:max-h-[min(62vh,620px)]"
             />
           </div>
-          <p className="text-center text-xs text-slate-300">
+          <p className="text-center text-[11px] text-slate-300 sm:text-xs">
             Total played: <span className="font-mono">{progress.played}</span> · Keyboard{" "}
             <kbd className="rounded border border-cyan-200/30 bg-slate-800/80 px-1 text-slate-100">
               1
@@ -883,7 +923,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+        <div className="grid max-h-[52vh] grid-cols-1 gap-2 overflow-y-auto pr-1 sm:max-h-[58vh] sm:gap-3 lg:max-h-[min(62vh,620px)] lg:grid-cols-1">
           {round.choices.map((d, idx) => {
             const locked = pickedId !== null;
             const isPicked = pickedId === d.id;
@@ -907,12 +947,12 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
                 type="button"
                 disabled={locked}
                 onClick={() => onChoose(d)}
-                className={`rounded-2xl border-2 bg-slate-900/55 px-4 py-4 text-left transition backdrop-blur-sm ${ring} disabled:cursor-default cursor-pointer`}
+                className={`rounded-xl md:rounded-2xl border-2 bg-slate-900/55 px-3 py-1 text-left transition backdrop-blur-sm md:px-4 md:py-4 ${ring} disabled:cursor-default cursor-pointer`}
               >
-                <span className="text-sm font-medium text-slate-300">
+                <span className="text-xs font-medium text-slate-300 md:text-sm">
                   Option {idx + 1} · {DIVISION_LABEL_BN[d.division]}
                 </span>
-                <span className="mt-1 block text-2xl font-extrabold text-slate-100">
+                <span className="mt-1 block text-xs md:text-lg font-extrabold text-slate-100 sm:text-xl">
                   {d.nameBn}
                 </span>
               </button>
