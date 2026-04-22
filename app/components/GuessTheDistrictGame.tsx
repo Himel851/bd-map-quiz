@@ -1016,7 +1016,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         </aside>
       </div>
 
-      <button
+      {/* <button
         type="button"
         onClick={() => {
           if (initialMode) {
@@ -1030,7 +1030,7 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         className="text-center text-sm text-stone-500 underline cursor-pointer"
       >
         Back to Menu (leave run)
-      </button>
+      </button> */}
     </div>
   );
 }
