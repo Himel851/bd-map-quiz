@@ -863,14 +863,9 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
           {activeMode === "time_attack" && " · Rapid Quiz"}
           {activeMode === "daily" && " · Daily"}
         </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-100">
-          Which District?
+        <h1 className="mt-1 text-balance text-xl font-bold tracking-tight text-slate-100 sm:text-2xl">
+          Guess the District from the options below.
         </h1>
-        {/* {subtitle ? (
-          <p className="mt-2 text-sm leading-relaxed text-slate-300">
-            {subtitle}
-          </p>
-        ) : null} */}
       </header>
 
       <div className="flex flex-col gap-3 lg:flex-row lg:gap-4 xl:gap-5 lg:items-stretch">
@@ -937,7 +932,11 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
               </p>
             </div>
 
-            <div className="grid max-h-[52vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:max-h-[50vh] sm:gap-3 lg:max-h-[min(62vh,620px)] lg:grid-cols-1">
+            <div
+              className="grid max-h-[52vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:max-h-[50vh] sm:gap-3 lg:max-h-[min(62vh,620px)] lg:grid-cols-1"
+              role="radiogroup"
+              aria-label="District choices"
+            >
               {round.choices.map((d, idx) => {
                 const locked = pickedId !== null;
                 const isPicked = pickedId === d.id;
@@ -955,19 +954,55 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
                     ring = "border-cyan-200/15 opacity-60";
                   }
                 }
+
+                let radioRing =
+                  "border-cyan-200/70 bg-slate-950/40 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.12)]";
+                if (locked) {
+                  if (isAnswer) {
+                    radioRing =
+                      "border-cyan-300 bg-cyan-400/25 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.35)]";
+                  } else if (isPicked && !isAnswer) {
+                    radioRing =
+                      "border-red-400 bg-red-500/20 shadow-[inset_0_0_0_1px_rgba(248,113,113,0.35)]";
+                  } else {
+                    radioRing = "border-slate-600/45 bg-slate-950/30 opacity-55";
+                  }
+                }
+
+                const showInnerDot =
+                  (locked && isAnswer) || (locked && isPicked && !isAnswer);
+                let innerDotClass =
+                  "h-2 w-2 rounded-full md:h-2.5 md:w-2.5 bg-cyan-200";
+                if (locked && isPicked && !isAnswer) {
+                  innerDotClass =
+                    "h-2 w-2 rounded-full md:h-2.5 md:w-2.5 bg-red-400";
+                }
+
                 return (
                   <button
                     key={d.id}
                     type="button"
+                    role="radio"
+                    aria-checked={isPicked}
                     disabled={locked}
                     onClick={() => onChoose(d)}
-                    className={`rounded-lg border-2 bg-slate-900/55 px-3 py-1 text-left transition backdrop-blur-sm md:px-4 md:py-4 ${ring} disabled:cursor-default cursor-pointer`}
+                    className={`flex items-start gap-3 rounded-lg border-2 bg-slate-900/55 px-3 py-2 text-left transition backdrop-blur-sm md:gap-4 md:px-4 md:py-4 ${ring} disabled:cursor-default cursor-pointer`}
                   >
-                    <span className="text-xs font-medium text-slate-300 md:text-sm">
-                      Option {idx + 1} · {DIVISION_LABEL_BN[d.division]}
+                    <span
+                      className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 md:mt-1 md:h-5 md:w-5 ${radioRing}`}
+                      aria-hidden
+                    >
+                      {showInnerDot ? (
+                        <span className={innerDotClass} />
+                      ) : null}
                     </span>
-                    <span className="mt-1 block text-xs md:text-lg font-extrabold text-slate-100 sm:text-xl">
-                      {d.nameBn}
+                    <span className="min-w-0 flex-1">
+                      <span className="text-xs font-medium text-slate-300 md:text-sm">
+                        Option {idx + 1} · {DIVISION_LABEL_BN[d.division]}
+                      </span>
+                      <span className="mt-1 block text-xs font-extrabold text-slate-100 sm:text-xl md:text-lg">
+                        {d.nameBn}
+                      </span>
                     </span>
                   </button>
                 );

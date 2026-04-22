@@ -7,7 +7,7 @@ export const STORAGE_PROGRESS = "guess-district-bd-progress-v1";
 export const CLASSIC_ROUNDS = 10;
 export const DAILY_ROUNDS = 10;
 export const TIME_ATTACK_MS = 60_000;
-export const QUESTION_TIME_MS = 20_000;
+export const QUESTION_TIME_MS = 30_000;
 
 /** Achievement ids — stable for storage */
 export const ACHIEVEMENTS: Record<
