@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
           <GoogleAnalytics measurementId={gaMeasurementId} />
         ) : null}
         {children}
+        <Analytics />
       </body>
     </html>
   );
