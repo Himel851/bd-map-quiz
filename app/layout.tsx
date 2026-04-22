@@ -4,6 +4,7 @@ import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
         ) : null}
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
