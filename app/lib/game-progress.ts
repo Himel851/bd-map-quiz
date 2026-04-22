@@ -32,7 +32,7 @@ export const ACHIEVEMENTS: Record<
   daily_complete: {
     id: "daily_complete",
     titleBn: "Daily Challenger",
-    descBn: "Complete today's challenge",
+    descBn: "Finish today's daily run with 10/10 correct answers",
   },
   time_attack_12: {
     id: "time_attack_12",

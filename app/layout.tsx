@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
     "A fast Bangladesh district quiz with highlighted map regions, score tracking, and streaks.",
 };
 
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +32,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {gaMeasurementId ? (
+          <GoogleAnalytics measurementId={gaMeasurementId} />
+        ) : null}
+        {children}
+      </body>
     </html>
   );
 }

@@ -826,6 +826,25 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
     );
   }
 
+  const statsCards = (
+    <>
+      <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 text-center text-sm shadow-sm backdrop-blur-sm">
+        <div className="text-xs text-slate-300">Score</div>
+        <div className="font-mono text-lg font-bold text-slate-100">{score}</div>
+      </div>
+      <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 text-center text-sm shadow-sm backdrop-blur-sm">
+        <div className="text-xs text-slate-300">Streak</div>
+        <div className="font-mono text-lg font-bold text-slate-100">{streak}×</div>
+      </div>
+      <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 text-center text-sm shadow-sm backdrop-blur-sm">
+        <div className="text-xs text-slate-300">Level</div>
+        <div className="font-mono text-lg font-bold text-slate-100">
+          {levelFromXp(progress.xp)}
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex mx-auto w-full max-w-4xl flex-col gap-4 px-3 py-4 text-slate-100 sm:gap-6 sm:px-4 sm:py-8 lg:px-8">
       <ToastContainer
@@ -854,122 +873,112 @@ export function GuessTheDistrictGame({ initialMode }: GuessTheDistrictGameProps)
         ) : null} */}
       </header>
 
-      <div className="flex flex-col gap-3">
-        <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-stretch">
-          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 text-center text-sm font-semibold text-slate-200 backdrop-blur-sm">
-            {questionProgress
-              ? `Question ${questionProgress.current} / ${questionProgress.total}`
-              : "Rapid Quiz"}
+      <div className="flex flex-col gap-3 lg:flex-row lg:gap-4 xl:gap-5 lg:items-stretch">
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-stretch">
+            <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 text-center text-sm font-semibold text-slate-200 backdrop-blur-sm">
+              {questionProgress
+                ? `Question ${questionProgress.current} / ${questionProgress.total}`
+                : "Rapid Quiz"}
+            </div>
+
+            {activeMode === "time_attack" ? (
+              <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 text-center backdrop-blur-sm">
+                <div
+                  className={`font-mono text-2xl font-bold tabular-nums ${
+                    timeLeftMs < 10_000 ? "text-red-400" : "text-slate-100"
+                  }`}
+                >
+                  {(timeLeftMs / 1000).toFixed(1)}s
+                </div>
+                <div className="text-xs text-slate-300">Time left</div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 backdrop-blur-sm">
+                <div className="mb-1 flex justify-between text-xs text-slate-300">
+                  <span>Question timer</span>
+                  <span>{Math.ceil(timerRatio * (QUESTION_TIME_MS / 1000))}s</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
+                  <div
+                    className={`h-full rounded-full transition-[width] duration-200 ${
+                      timerRatio < 0.25 ? "bg-red-500" : "bg-blue-500"
+                    }`}
+                    style={{ width: `${timerRatio * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
-          {activeMode === "time_attack" ? (
-            <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 text-center backdrop-blur-sm">
-              <div
-                className={`font-mono text-2xl font-bold tabular-nums ${
-                  timeLeftMs < 10_000 ? "text-red-400" : "text-slate-100"
-                }`}
-              >
-                {(timeLeftMs / 1000).toFixed(1)}s
-              </div>
-              <div className="text-xs text-slate-300">Time left</div>
-            </div>
-          ) : (
-            <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-4 py-3 backdrop-blur-sm">
-              <div className="mb-1 flex justify-between text-xs text-slate-300">
-                <span>Question timer</span>
-                <span>{Math.ceil(timerRatio * (QUESTION_TIME_MS / 1000))}s</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-slate-700/70">
-                <div
-                  className={`h-full rounded-full transition-[width] duration-200 ${
-                    timerRatio < 0.25 ? "bg-red-500" : "bg-blue-500"
-                  }`}
-                  style={{ width: `${timerRatio * 100}%` }}
+          {/* Tablet: stats under timer; desktop (lg+): vertical stats in right sidebar */}
+          <div className="hidden md:grid lg:hidden grid-cols-3 gap-2">
+            {statsCards}
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-4 xl:gap-5 lg:items-start">
+            <div className="space-y-3">
+              <div className="overflow-hidden shadow-xl">
+                <BangladeshDistrictMapSvg
+                  fillById={fillById}
+                  defaultFill={FILL_DEFAULT}
+                  className="h-auto w-full max-h-[44vh] md:max-h-[58vh] lg:max-h-[min(62vh,620px)]"
                 />
               </div>
+              <p className="text-center text-[11px] text-slate-300 sm:text-xs">
+                Total played: <span className="font-mono">{progress.played}</span> · Keyboard{" "}
+                <kbd className="rounded border border-cyan-200/30 bg-slate-800/80 px-1 text-slate-100">
+                  1
+                </kbd>
+                –
+                <kbd className="rounded border border-cyan-200/30 bg-slate-800/80 px-1 text-slate-100">
+                  4
+                </kbd>
+              </p>
             </div>
-          )}
+
+            <div className="grid max-h-[52vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:max-h-[50vh] sm:gap-3 lg:max-h-[min(62vh,620px)] lg:grid-cols-1">
+              {round.choices.map((d, idx) => {
+                const locked = pickedId !== null;
+                const isPicked = pickedId === d.id;
+                const isAnswer = d.id === round.answer.id;
+                let ring =
+                  "border-cyan-200/25 hover:border-cyan-300/60";
+                if (locked) {
+                  if (isAnswer) {
+                    ring =
+                      "border-cyan-300 bg-cyan-400/15";
+                  } else if (isPicked && !isAnswer) {
+                    ring =
+                      "border-red-300 bg-red-400/10";
+                  } else {
+                    ring = "border-cyan-200/15 opacity-60";
+                  }
+                }
+                return (
+                  <button
+                    key={d.id}
+                    type="button"
+                    disabled={locked}
+                    onClick={() => onChoose(d)}
+                    className={`rounded-lg border-2 bg-slate-900/55 px-3 py-1 text-left transition backdrop-blur-sm md:px-4 md:py-4 ${ring} disabled:cursor-default cursor-pointer`}
+                  >
+                    <span className="text-xs font-medium text-slate-300 md:text-sm">
+                      Option {idx + 1} · {DIVISION_LABEL_BN[d.division]}
+                    </span>
+                    <span className="mt-1 block text-xs md:text-lg font-extrabold text-slate-100 sm:text-xl">
+                      {d.nameBn}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        <div className="hidden md:grid grid-cols-3 gap-2 text-center text-sm">
-          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
-            <div className="text-xs text-slate-300">Score</div>
-            <div className="font-mono text-lg font-bold text-slate-100">
-              {score}
-            </div>
-          </div>
-          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
-            <div className="text-xs text-slate-300">Streak</div>
-            <div className="font-mono text-lg font-bold text-slate-100">
-              {streak}×
-            </div>
-          </div>
-          <div className="rounded-xl border border-cyan-200/20 bg-slate-900/55 px-3 py-2 shadow-sm backdrop-blur-sm">
-            <div className="text-xs text-slate-300">Level</div>
-            <div className="font-mono text-lg font-bold text-slate-100">
-              {levelFromXp(progress.xp)}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:gap-5 lg:grid-cols-2 lg:items-start">
-        <div className="space-y-3">
-          <div className="overflow-hidden shadow-xl">
-            <BangladeshDistrictMapSvg
-              fillById={fillById}
-              defaultFill={FILL_DEFAULT}
-              className="h-auto w-full max-h-[44vh] md:max-h-[58vh] lg:max-h-[min(62vh,620px)]"
-            />
-          </div>
-          <p className="text-center text-[11px] text-slate-300 sm:text-xs">
-            Total played: <span className="font-mono">{progress.played}</span> · Keyboard{" "}
-            <kbd className="rounded border border-cyan-200/30 bg-slate-800/80 px-1 text-slate-100">
-              1
-            </kbd>
-            –
-            <kbd className="rounded border border-cyan-200/30 bg-slate-800/80 px-1 text-slate-100">
-              4
-            </kbd>
-          </p>
-        </div>
-
-        <div className="grid max-h-[52vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:max-h-[50vh] sm:gap-3 lg:max-h-[min(62vh,620px)] lg:grid-cols-1">
-          {round.choices.map((d, idx) => {
-            const locked = pickedId !== null;
-            const isPicked = pickedId === d.id;
-            const isAnswer = d.id === round.answer.id;
-            let ring =
-              "border-cyan-200/25 hover:border-cyan-300/60";
-            if (locked) {
-              if (isAnswer) {
-                ring =
-                  "border-cyan-300 bg-cyan-400/15";
-              } else if (isPicked && !isAnswer) {
-                ring =
-                  "border-red-300 bg-red-400/10";
-              } else {
-                ring = "border-cyan-200/15 opacity-60";
-              }
-            }
-            return (
-              <button
-                key={d.id}
-                type="button"
-                disabled={locked}
-                onClick={() => onChoose(d)}
-                className={`rounded-xl md:rounded-2xl border-2 bg-slate-900/55 px-3 py-1 text-left transition backdrop-blur-sm md:px-4 md:py-4 ${ring} disabled:cursor-default cursor-pointer`}
-              >
-                <span className="text-xs font-medium text-slate-300 md:text-sm">
-                  Option {idx + 1} · {DIVISION_LABEL_BN[d.division]}
-                </span>
-                <span className="mt-1 block text-xs md:text-lg font-extrabold text-slate-100 sm:text-xl">
-                  {d.nameBn}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <aside className="hidden lg:flex w-29 shrink-0 flex-col gap-2 self-stretch xl:w-32">
+          {statsCards}
+        </aside>
       </div>
 
       <button
